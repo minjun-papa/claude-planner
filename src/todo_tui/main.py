@@ -31,7 +31,7 @@ except ImportError:
 
 # Jira 클라이언트 임포트
 try:
-    from jira_client import JiraClient, JiraConfig
+    from .jira_client import JiraClient, JiraConfig
     JIRA_AVAILABLE = True
 except ImportError:
     JIRA_AVAILABLE = False
@@ -267,8 +267,12 @@ class TodoManager:
 
     TYPE_ORDER = {"epic": 0, "story": 1, "task": 2}
 
+    # 설정 파일 경로: 사용자 홈 디렉토리
+    CONFIG_DIR = Path.home() / ".todo-tui"
+
     def __init__(self):
-        self.config_path = Path(__file__).parent / "config.json"
+        self.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+        self.config_path = self.CONFIG_DIR / "config.json"
         self.todos: List[TodoItem] = []
         self.todo_file: Path = self._get_todo_file_path()
         self.season_manager: Optional[SeasonManager] = None
@@ -2097,8 +2101,7 @@ class TodoApp(App):
 
     def __init__(self):
         self.manager = TodoManager()
-        config_path = Path(__file__).parent / "config.json"
-        self.season_manager = SeasonManager(config_path)
+        self.season_manager = SeasonManager(self.manager.config_path)
         self.manager.set_season_manager(self.season_manager)
 
         # Jira 클라이언트 초기화

@@ -32,53 +32,60 @@
 | 🎨 **직관적 UI** | 이모지 아이콘으로 상태/타입/우선순위 표시 |
 | 💾 **자동 저장** | JSON 형식으로 데이터 자동 저장 |
 | ⌨️ **키보드 중심** | 마우스 없이 키보드만으로 모든 조작 가능 |
+| 📅 **시즌 관리** | 프로젝트/기간별로 시즌을 나누어 관리 |
+| 🔗 **Jira 동기화** | Jira와 양방향 동기화 지원 |
+| 📈 **리포트** | 오늘/주간/시즌별 리포트 생성 |
 
 ### 📸 스크린샷
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
+│ 🔗 Jira 연결됨 | J: 동기화 | Ctrl+J: 설정                    │
+├─────────────────────────────────────────────────────────────┤
 │ 📊 전체: 5 | 📋 대기: 2 | 🔄 진행중: 2 | ✅ 완료: 1         │
 │ 📁 Epic: 1 | 📖 Story: 2 | ✅ Task: 2                       │
 ├─────────────────────────────────────────────────────────────┤
 │ 🔄 진행중 (2): 로그인 구현 (task) | API 개발 (task)         │
 ├─────────────────────────────────────────────────────────────┤
 │ 📋 Todo List                                                │
-│ ├─ ○ 📁 🟡 [general] 프로젝트 개발                          │
-│ │  ├─ ◐ 📖 🟡 [general] 백엔드 개발                         │
-│ │  │  └─ ◐ ✅ 🟡 [general] API 개발                         │
+│ ├─ ○ 📁 🟡 [general] 프로젝트 개발 [PROJ-1]                 │
+│ │  ├─ ◐ 📖 🟡 [general] 백엔드 개발 [PROJ-2]                │
+│ │  │  └─ ◐ ✅ 🟡 [general] API 개발 [PROJ-3]                │
 │ │  └─ ● 📖 🟢 [general] 프론트엔드 개발                      │
 │ │     └─ ● ✅ 🔴 [general] 로그인 구현 (due: 2024-12-31)    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 🚀 빠른 시작
+### 🚀 설치
 
-#### 설치
+#### 방법 1: pip로 설치 (권장)
 
 ```bash
 # 저장소 클론
 git clone https://github.com/minjun-papa/todo-tui.git
 cd todo-tui
 
-# 의존성 설치
-pip install textual
+# 패키지 설치
+pip3 install .
 ```
 
-#### 실행
+#### PATH 설정 (최초 1회)
 
 ```bash
-python3 todo.py
-```
-
-#### Alias 설정 (선택사항)
-
-```bash
-# ~/.zshrc 또는 ~/.bashrc에 추가
-echo "alias todo='python3 $(pwd)/todo.py'" >> ~/.zshrc
+echo 'export PATH="$HOME/Library/Python/3.9/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
+```
 
-# 이제 어디서든
+### ▶️ 실행
+
+```bash
 todo
+```
+
+또는 PATH 설정 없이 직접 실행:
+
+```bash
+python3 -m todo_tui.main
 ```
 
 ### ⌨️ 키보드 단축키
@@ -87,14 +94,19 @@ todo
 
 | 키 | 기능 |
 |----|------|
+| `Space` | 체크 토글 (To Do ↔ Done) |
+| `s` | 상태 변경 (대기 → 진행중 → 완료 → 대기) |
 | `a` | 새 항목 추가 |
 | `A` | 하위 항목 추가 (선택된 항목 아래) |
-| `s` | 상태 변경 (대기 → 진행중 → 완료 → 대기) |
 | `d` | 삭제 (하위 항목도 함께 삭제) |
 | `e` | 전체 펼치기 |
 | `c` | 전체 접기 |
 | `→` | 선택 노드 펼치기 |
 | `←` | 선택 노드 접기 |
+| `S` | 시즌 선택 |
+| `r` | 리포트 보기 |
+| `j` | Jira 동기화 |
+| `Ctrl+J` | Jira 설정 |
 | `↑/↓` | 항목 탐색 |
 | `q` | 앱 종료 |
 
@@ -106,6 +118,69 @@ todo
 | `Shift+Tab` | 이전 필드로 이동 |
 | `Enter` | 저장 |
 | `Escape` | 취소 |
+
+### 🔗 Jira 연동
+
+#### Jira 설정
+
+1. `Ctrl+J`를 눌러 Jira 설정 화면 열기
+2. 다음 정보 입력:
+   - **Jira URL**: `https://your-company.atlassian.net`
+   - **이메일**: Jira 계정 이메일
+   - **API 토큰**: [Atlassian API 토큰](https://id.atlassian.com/manage-profile/security/api-tokens)에서 생성
+   - **프로젝트 키**: 예) `PROJ`
+3. "연결 테스트" 버튼으로 연결 확인
+4. "저장" 버튼으로 설정 저장
+
+#### Jira 동기화
+
+- `j` 키를 눌러 Jira에서 Todo 동기화
+- 새 Todo 추가 시 자동으로 Jira 이슈 생성
+- 상태 변경 시 자동으로 Jira 이슈 상태 업데이트
+
+#### 데이터 매핑
+
+| Todo 필드 | Jira 필드 |
+|-----------|-----------|
+| content | summary |
+| type (epic/story/task) | issuetype (Epic/Story/Task) |
+| status | status (To Do/In Progress/Done) |
+| priority | priority |
+| due_date | duedate |
+
+### 📁 데이터 저장
+
+- **저장 위치**: `~/.todo-tui/`
+- **설정 파일**: `~/.todo-tui/config.json`
+- **Todo 데이터**: `~/.todo-tui/todos.json`
+- **시즌 데이터**: `~/.todo-tui/seasons/`
+
+### ⚙️ 설정 파일
+
+`~/.todo-tui/config.json`:
+
+```json
+{
+  "save_path": "/Users/your-username/.todo-tui",
+  "storage_type": "local",
+  "jira": {
+    "enabled": false,
+    "base_url": "https://your-company.atlassian.net",
+    "email": "your-email@example.com",
+    "api_token": "your-api-token",
+    "project_key": "PROJ"
+  }
+}
+```
+
+### 📦 기존 데이터 마이그레이션
+
+기존 프로젝트 디렉토리에서 데이터를 복사:
+
+```bash
+cp /Users/sun/Document/01_project/todo-cli/config.json ~/.todo-tui/
+cp -r /Users/sun/todos ~/.todo-tui/
+```
 
 ### 🎨 아이콘 가이드
 
@@ -121,9 +196,9 @@ todo
 
 | 상태 | 아이콘 | 설명 |
 |------|--------|------|
-| 대기 | ○ | 아직 시작하지 않음 |
-| 진행중 | ◐ | 현재 작업 중 |
-| 완료 | ● | 작업 완료 |
+| 대기 | ⬜ | 아직 시작하지 않음 |
+| 진행중 | 🔄 | 현재 작업 중 |
+| 완료 | ✅ | 작업 완료 |
 
 #### 우선순위 아이콘
 
@@ -133,22 +208,30 @@ todo
 | 보통 | 🟡 |
 | 낮음 | 🟢 |
 
-### 📁 데이터 저장
+### 📋 요구사항
 
-- **저장 위치**: `~/todos/todos.json`
-- **설정 파일**: `config.json`에서 경로 변경 가능
-- **자동 변환**: 기존 `completed` 필드는 자동으로 `status`로 변환
+- Python 3.8+
+- textual >= 0.40.0
+- requests >= 2.28.0
+
+### 📁 프로젝트 구조
+
+```
+todo-cli/
+├── src/todo_tui/
+│   ├── __init__.py
+│   ├── main.py          # 메인 애플리케이션
+│   └── jira_client.py   # Jira REST API 클라이언트
+├── setup.py
+├── pyproject.toml
+└── README.md
+```
 
 ### 🧪 테스트
 
 ```bash
 python3 test_e2e.py
 ```
-
-### 📋 요구사항
-
-- Python 3.8+
-- [textual](https://github.com/Textualize/textual) 라이브러리
 
 ---
 
@@ -170,40 +253,90 @@ It supports **Epic > Story > Task** hierarchy for project management, with a cle
 | 🎨 **Intuitive UI** | Emoji icons for status/type/priority |
 | 💾 **Auto Save** | Automatic JSON data persistence |
 | ⌨️ **Keyboard-First** | Full keyboard navigation |
+| 📅 **Season Management** | Organize work by project/period |
+| 🔗 **Jira Sync** | Bidirectional sync with Jira |
+| 📈 **Reports** | Daily/weekly/season reports |
 
-### 🚀 Quick Start
+### 🚀 Installation
 
 ```bash
 # Clone repository
 git clone https://github.com/minjun-papa/todo-tui.git
 cd todo-tui
 
-# Install dependency
-pip install textual
+# Install package
+pip3 install .
+```
 
-# Run
-python3 todo.py
+#### PATH Setup (one-time)
+
+```bash
+echo 'export PATH="$HOME/Library/Python/3.9/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### ▶️ Run
+
+```bash
+todo
+```
+
+Or run directly without PATH:
+
+```bash
+python3 -m todo_tui.main
 ```
 
 ### ⌨️ Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
+| `Space` | Toggle check (To Do ↔ Done) |
+| `s` | Change status (todo → in_progress → done → todo) |
 | `a` | Add new item |
 | `A` | Add child item |
-| `s` | Change status (todo → in_progress → done → todo) |
 | `d` | Delete (with children) |
 | `e` | Expand all |
 | `c` | Collapse all |
 | `→` | Expand node |
 | `←` | Collapse node |
-| `↑/↓` | Navigate |
+| `S` | Season select |
+| `r` | View report |
+| `j` | Jira sync |
+| `Ctrl+J` | Jira settings |
 | `q` | Quit |
+
+### 🔗 Jira Integration
+
+#### Setup
+
+1. Press `Ctrl+J` to open Jira settings
+2. Enter your Jira credentials:
+   - **Jira URL**: `https://your-company.atlassian.net`
+   - **Email**: Your Jira account email
+   - **API Token**: Generate at [Atlassian API tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+   - **Project Key**: e.g., `PROJ`
+3. Click "Test Connection" to verify
+4. Click "Save" to save settings
+
+#### Sync
+
+- Press `j` to sync from Jira
+- New todos automatically create Jira issues
+- Status changes automatically update Jira issues
+
+### 📁 Data Storage
+
+- **Location**: `~/.todo-tui/`
+- **Config**: `~/.todo-tui/config.json`
+- **Todos**: `~/.todo-tui/todos.json`
+- **Seasons**: `~/.todo-tui/seasons/`
 
 ### 📋 Requirements
 
 - Python 3.8+
-- [textual](https://github.com/Textualize/textual) library
+- textual >= 0.40.0
+- requests >= 2.28.0
 
 ---
 
